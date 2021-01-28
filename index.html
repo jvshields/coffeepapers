@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>MSU Coffee Papers</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/jvshields/coffeepapers/papers.js"></script>
+    <script>
+    var obj = JSON.parse(data);
+    
+    $(document).ready(function(){        
+        obj.forEach((article, index) => {
+            var title = article.title;
+            var authors = article.authors;
+            var link = article.url;
+            var pdf = article.pdf;
+            var template = '<div class="article"><h3><strong>' + title + '</strong></h3><p> Author(s): '+ authors+ '</p><p>Link: <a target="_blank" href="'+link+'">'+link+'</a></p><p>PDF: <a download target="_blank" href="'+pdf+'"> '+pdf+'</p></div>';
+            var element = document.querySelector('.article-container');
+            element.insertAdjacentHTML( 'beforeend', template );
+        })
+    });
+    </script> 
+</head> 
+<body>
+    <div class="article-container">        
+    </div>
+
+</body>
+</html>
