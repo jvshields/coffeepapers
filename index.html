@@ -15,7 +15,7 @@
             var authors = article.authors;
             var link = article.url;
             var pdf = article.pdf;
-            var template = '<div class="article"><big><p><strong>' + title + '</strong></big><br> Author(s): '+ authors+ '<br>Link: <a target="_blank" href="'+link+'">'+link+'</a>PDF: <a download target="_blank" href="'+pdf+'"> '+pdf+'</p></div>';
+            var template = '<div class="article"><big><p><strong><li>' + title + '</strong></big><br> Author(s): '+ authors+ '<br>Link: <a target="_blank" href="'+link+'">'+link+'    </a>PDF: <a download target="_blank" href="'+pdf+'"> '+pdf+'</p></div>';
             var element = document.querySelector('.article-container');
             element.insertAdjacentHTML( 'beforeend', template );
         })
