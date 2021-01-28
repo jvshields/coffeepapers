@@ -24,11 +24,8 @@
 
 
     <script>
-      n = new Date();
-      y = n.getFullYear();
-      m = n.getMonth() + 1;
-      d = n.getDate();
-      document.getElementByID("date").innerHTML = m + "/" + d + "/" + y;
+      var n = new Date();
+      document.getElementByID("date").innerHTML = n;
      
     </script>
     
@@ -38,7 +35,9 @@
   <p><center>
       <h1>MSU Astro Coffee</h2>
 <h2>Papers for discussion</h2>
+
 <big><p id="date"></p></big>
+
 <hr>
 
 </center>
