@@ -12,7 +12,8 @@ import re
 def cleanhtml(raw_html):
     cleantext = re.sub('\\n', '', raw_html)
     cleaned = re.sub('\\t', ' ', cleantext)
-    return(cleaned)
+    cleanedmore = re.sub('\"', '“', cleaned)
+    return(cleanedmore)
 
 def query(querytitle):
     queryfixed = querytitle.replace(' ', '+')
