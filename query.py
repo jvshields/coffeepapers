@@ -10,7 +10,6 @@ import re
 
 
 def cleanhtml(raw_html):
-
     cleantext = re.sub('\\n', '', raw_html)
     cleaned = re.sub('\\t', ' ', cleantext)
     return(cleaned)
@@ -31,7 +30,8 @@ def query(querytitle):
     uncleantitle = data.title
     title = cleanhtml(uncleantitle)
     
-    authors = (', '.join(author.name for author in data.authors))
+    authorsunclean = (', '.join(author.name for author in data.authors))
+    authors = re.sub('\'', '’', authorsunclean)
     
     link = data.link
  
@@ -49,7 +49,6 @@ def query(querytitle):
     }
     
     
-#    return(title, authors, link, pdf)
     return(dictionary)
 
 
