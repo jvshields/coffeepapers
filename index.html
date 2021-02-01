@@ -6,6 +6,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <!--    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/jvshields/coffeepapers/papers.js"></script> -->
     <script type="text/javascript" src="papers.js"></script>
+    
     <script>
     var obj = JSON.parse(data);
     
@@ -19,6 +20,7 @@
             var element = document.querySelector('.article-container');
             element.insertAdjacentHTML( 'beforeend', template );
         })
+	const date = new Date(document.lastModified);
     });
     </script>
     
@@ -30,13 +32,10 @@
 <strong><big>Papers for discussion</big></strong> <br>
     <big><a href ="https://docs.google.com/spreadsheets/d/1DmYRK39GvEcRS8M9j1d9eULotRglOFGE_c5twBYK8eM/edit#gid=0">Sign up to lead here</a></big>
 
-    
-
-<script>
-  var n = new Date();
-  document.getElementById("date").innerHTML = n;
-  
-</script>
+    Papers last modified 
+    <script type ="text/javascript">
+      document.write(date)
+    </script>
 
 <hr>
 
