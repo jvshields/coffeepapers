@@ -7,6 +7,7 @@ import feedparser
 import sys
 import json
 import re
+from datetime import date
 
 
 def cleanhtml(raw_html):
@@ -17,7 +18,7 @@ def cleanhtml(raw_html):
 
 def query(querytitle):
     queryfixed = querytitle.replace(' ', '+')
-    queryfixed = queryfixed.replace('_', '+')
+    queryfixed = queryfixed.replace('_', '+AND+ti:')
     
     base_url = 'http://export.arxiv.org/api/query?search_query=ti:'
     q = base_url + queryfixed + '&start=0&max_results=1'
@@ -68,9 +69,6 @@ with open('papers.js', 'w') as outfile:
     json.dump(full_list, outfile)
     outfile.write('\'')
     
-
-
-
 
 
 
