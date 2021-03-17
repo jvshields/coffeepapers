@@ -14,6 +14,7 @@ def cleanhtml(raw_html):
     cleantext = re.sub('\\n', '', raw_html)
     cleaned = re.sub('\\t', ' ', cleantext)
     cleanedmore = re.sub('\"', '“', cleaned)
+    cleanedmore = re.sub('\'', '’', cleanedmore)
     return(cleanedmore)
 
 def query(querytitle):
