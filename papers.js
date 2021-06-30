@@ -1,1 +1,1 @@
-data='[{"title": "Stellar Proper Motions in the Orion Nebula Cluster", "authors": "Dongwon Kim, Jessica R. Lu, Quinn Konopacky, Laurie Chu, Elizabeth Toller, Jay Anderson, Christopher A. Theissen, Mark R. Morris", "url": "http://arxiv.org/abs/1812.04134v2", "pdf": "http://arxiv.org/pdf/1812.04134v2"}]'
+data='[{"title": "HyPhy: Deep Generative Conditional Posterior Mapping of Hydrodynamical  Physics", "authors": "Benjamin Horowitz, Max Dornfest, Zarija Luki\u0107, Peter Harrington", "url": "http://arxiv.org/abs/2106.12675v1", "pdf": "http://arxiv.org/pdf/2106.12675v1"}]'
