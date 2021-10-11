@@ -10,7 +10,7 @@
     <title>MSU Coffee Papers</title>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <!--    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/jvshields/coffeepapers/papers.js"></script> -->
-    <script type="text/javascript" src="papers.js"></script>
+    <script type="text/javascript" src="old_papers.js"></script>
     
     <script>
     var obj = JSON.parse(data);
@@ -21,7 +21,8 @@
             var authors = article.authors;
             var link = article.url;
             var pdf = article.pdf;
-            var template = '<div class="article"><big><p><strong><li>' + title + '</strong></big><br> Author(s): '+ authors+ '<br>Link: <a target="_blank" href="'+link+'">'+link+'</a>&emsp; PDF: <a download target="_blank" href="'+pdf+'"> '+pdf+'</p></div>';
+            var date = article.date;
+            var template = '<div class="article"><big><p><strong><li>' + title + '</strong></big><br> Author(s): '+ authors+ '<br>Link: <a target="_blank" href="'+link+'">'+link+'</a>&emsp; PDF: <a download target="_blank" href="'+pdf+'"> '+pdf+'</a> <br>Date Shared: ' + date + ' </p></div>';
             var element = document.querySelector('.article-container');
             element.insertAdjacentHTML( 'beforeend', template );
         })
@@ -33,10 +34,10 @@
 
   <p><center>
       <h1>MSU Astro Coffee</h1>
-      <strong>Now at 10:30 am, MWF!</strong> <br>
-<strong><big>Papers for discussion</big></strong> <br>
-    <big><a href ="https://docs.google.com/spreadsheets/d/1DmYRK39GvEcRS8M9j1d9eULotRglOFGE_c5twBYK8eM/edit#gid=0">Sign up to lead here</a></big> <br>
-    <big><a href ="archive.html">Past Papers</a></big>
+      <!-- <strong>Now at 10:30 am, MWF!</strong> <br> -->
+<strong><big>Past Papers</big></strong> <br>
+    <big><a href ="https://docs.google.com/spreadsheets/d/1DmYRK39GvEcRS8M9j1d9eULotRglOFGE_c5twBYK8eM/edit#gid=0">Sign up to lead here</a></big>
+
     <hr>
     
 
