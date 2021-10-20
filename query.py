@@ -104,7 +104,7 @@ else:
         json.dump(data, f)
 
 # Finally, use "data" to create the ".js" file for the html script.
-with open('old_papers.js', 'w') as outfile:
+with open('old_papers.js', 'a') as outfile:
     outfile.write('data=\'')
     json.dump(data, outfile)
     outfile.write('\'')
