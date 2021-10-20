@@ -97,6 +97,7 @@ else:
     with open('old_papers.json') as f:
         data = json.load(f)
 
+        assert len(full_list)
         for i in range(len(full_list)):
             data.insert(0, full_list[i])
         
@@ -104,7 +105,7 @@ else:
         json.dump(data, f)
 
 # Finally, use "data" to create the ".js" file for the html script.
-with open('old_papers.js', 'a') as outfile:
+with open('old_papers.js') as outfile:
     outfile.write('data=\'')
     json.dump(data, outfile)
     outfile.write('\'')
