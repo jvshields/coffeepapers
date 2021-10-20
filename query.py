@@ -87,6 +87,7 @@ with open('papers.js', 'w') as outfile:
 # Make sure to check "old_papers.json" exists. 
 # If not, dump full_list to it and move on
 if not os.path.isfile("old_papers.json"):
+    print("Are we doing this?")
     data = full_list
     with open('old_papers.json', 'w') as f:
         json.dump(full_list, f)
