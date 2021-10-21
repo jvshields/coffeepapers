@@ -1,27 +1,28 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-
-import urllib.request as libreq
-import feedparser
 import sys
-import json
-import re
-from datetime import date
 import os
-
+import json
+import feedparser
+import urllib.request as libreq
 
 def cleanhtml(raw_html):
-    cleantext = re.sub('\\n', '', raw_html)
-    cleaned = re.sub('\\t', ' ', cleantext)
-    cleanedmore = re.sub('\"', '“', cleaned)
-    cleanedmore = re.sub('\'', '’', cleanedmore)
-    return(cleanedmore)
+
+    cleaned_html = raw_html.translate(
+            raw_html.maketrans({
+                    '\n': None, 
+                    '\t': ' ', 
+                    '\'': '’',
+                    '\"': '“'
+                    })
+            )
+
+    return cleaned_html
 
 def query(querytitle, share_date):
 
-    queryfixed = querytitle.replace(' ', '+')
-    queryfixed = queryfixed.replace('_', '+AND+ti:')
+    queryfixed = querytitle.replace(' ', '+').replace('_', '+AND+ti:')
     
     base_url = 'http://export.arxiv.org/api/query?search_query=ti:'
     q = base_url + queryfixed + '&start=0&max_results=1'
@@ -35,8 +36,9 @@ def query(querytitle, share_date):
     uncleantitle = data.title
     title = cleanhtml(uncleantitle)
     
-    authorsunclean = (', '.join(author.name for author in data.authors))
-    authors = re.sub('\'', '’', authorsunclean)
+    authors = ', '.join(
+            author.name for author in data.authors
+            ).replace('\'', '’')
     
     link = data.link
  
@@ -55,7 +57,7 @@ def query(querytitle, share_date):
     }
     
     
-    return (dictionary)
+    return dictionary
 
 
 
@@ -65,14 +67,12 @@ if __name__ == '__main__':
     # Any format, just a string. "Tu Oct 12" etc is fine.
     # We have to pass the last arg as the date though, or it'll mess up.
     *titles, share_date = sys.argv[1:]
-    assert titles, "Please provide 1 or more paper titles followed by a time string"
-    full_list = [query(title, share_date) for title in titles]
+    assert titles, "Provide 1 or more paper titles followed by a time string"
+    new_papers = [query(title, share_date) for title in titles]
 
 
     with open('papers.js', 'w') as outfile:
-        outfile.write('data=\'')
-        json.dump(full_list, outfile)
-        outfile.write('\'')
+        outfile.write(json.dumps(new_papers).join([r"data='", r"'"]))
         
     # The following loads and updates the archive json file
     # It's annoying and messy tbh. Python's JSON reader and the html one
@@ -82,27 +82,13 @@ if __name__ == '__main__':
     # It works but isn't very clean.
 
     # Make sure to check "old_papers.json" exists. 
-    # If not, dump full_list to it and move on
-    if not os.path.isfile("old_papers.json"):
+    all_papers = new_papers # Build the list of all previous and current papers
+    if os.path.isfile("old_papers.json"): # if old_papers.json exists, append 
+         with open('old_papers.json', 'r') as f:
+            all_papers += json.load(f)
         
-        data = full_list
-        with open('old_papers.json', 'w') as f:
-            json.dump(full_list, f)
+    # write out our new database of old papers
+    with open('old_papers.json', 'w') as f_json, open('old_papers.js', 'w') as f_js:
+        json.dump(all_papers, f_json)
+        f_js.write(json.dumps(all_papers).join([r"data='", r"'"]))
 
-    # If "old_papers.json" exists, load it, update its data will full_list
-    # and dump.
-    else:
-        with open('old_papers.json') as f:
-            data = json.load(f)
-
-            for i in range(len(full_list)):
-                data.insert(0, full_list[i])
-            
-        with open('old_papers.json', 'w') as f:
-            json.dump(data, f)
-
-    # Finally, use "data" to create the ".js" file for the html script.
-    with open('old_papers.js', 'w') as outfile:
-        outfile.write('data=\'')
-        json.dump(data, outfile)
-        outfile.write('\'')
