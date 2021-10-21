@@ -123,7 +123,7 @@ if __name__ == '__main__':
     # We have to pass the last arg as the date though, or it'll mess up.
     optlist, args = getopt.getopt(
             sys.argv[1:], 
-            'bd:h0F:', 
+            'bd:hF:', 
             ['backup', 'help', 'date=', 'format=']
             )
 
