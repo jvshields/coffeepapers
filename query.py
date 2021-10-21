@@ -18,45 +18,44 @@ def cleanhtml(raw_html):
     cleanedmore = re.sub('\'', '’', cleanedmore)
     return(cleanedmore)
 
-def query(share_date, *querytitles):
+def query(querytitle, share_date):
 
-    for querytitle in querytitles:
-        queryfixed = querytitle.replace(' ', '+')
-        queryfixed = queryfixed.replace('_', '+AND+ti:')
-        
-        base_url = 'http://export.arxiv.org/api/query?search_query=ti:'
-        q = base_url + queryfixed + '&start=0&max_results=1'
-        with libreq.urlopen(q) as url:
-          r = url.read()
-        
-        feed = feedparser.parse(r)
+    queryfixed = querytitle.replace(' ', '+')
+    queryfixed = queryfixed.replace('_', '+AND+ti:')
+    
+    base_url = 'http://export.arxiv.org/api/query?search_query=ti:'
+    q = base_url + queryfixed + '&start=0&max_results=1'
+    with libreq.urlopen(q) as url:
+      r = url.read()
+    
+    feed = feedparser.parse(r)
 
-        data = feed.entries[0]
-        
-        uncleantitle = data.title
-        title = cleanhtml(uncleantitle)
-        
-        authorsunclean = (', '.join(author.name for author in data.authors))
-        authors = re.sub('\'', '’', authorsunclean)
-        
-        link = data.link
-     
-        for link2 in data.links:
-            if link2.rel == 'alternate':
-                pass
-            elif link2.title == 'pdf':
-                pdf = link2.href
-                
-        dictionary = {
-        'title'   : title,
-        'authors' : authors,
-        'url'  : link,
-        'pdf'  : pdf,
-        'date' : share_date # Date queried, not necessarily posted
-        }
-        
-        
-        yield dictionary
+    data = feed.entries[0]
+    
+    uncleantitle = data.title
+    title = cleanhtml(uncleantitle)
+    
+    authorsunclean = (', '.join(author.name for author in data.authors))
+    authors = re.sub('\'', '’', authorsunclean)
+    
+    link = data.link
+ 
+    for link2 in data.links:
+        if link2.rel == 'alternate':
+            pass
+        elif link2.title == 'pdf':
+            pdf = link2.href
+            
+    dictionary = {
+    'title'   : title,
+    'authors' : authors,
+    'url'  : link,
+    'pdf'  : pdf,
+    'date' : share_date # Date queried, not necessarily posted
+    }
+    
+    
+    return (dictionary)
 
 
 
@@ -67,7 +66,7 @@ if __name__ == '__main__':
     # We have to pass the last arg as the date though, or it'll mess up.
     *titles, share_date = sys.argv[1:]
     assert titles, "Please provide 1 or more paper titles followed by a time string"
-    full_list = list(query(share_date, *titles))
+    full_list = [query(title, share_date) for title in titles]
 
 
     with open('papers.js', 'w') as outfile:
