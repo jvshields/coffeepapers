@@ -15,9 +15,7 @@ import sys
 import os
 import json
 import getopt
-import shutil
 import tarfile
-import gzip
 
 from datetime import datetime, timedelta
 import urllib.request as libreq
