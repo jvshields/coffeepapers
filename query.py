@@ -4,8 +4,8 @@
 import sys
 import os
 import json
-import feedparser
 import urllib.request as libreq
+import feedparser
 
 def cleanhtml(raw_html):
 
