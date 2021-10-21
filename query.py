@@ -1,11 +1,40 @@
 #!/usr/bin/env python
 # coding: utf-8
+'''Usage: ./query.py [OPTION]... TITLES
+Update website by querying ArXiV for papers with TITLES.
+Example: ./query.py -F '%Y-%m-%d' 'Delta Scuti Variables'
+
+Options:
+    -b, --backup         Create backup of current data files
+    -d, --date=DATE      Set the date as the string DATE
+                         default is next Tuesday or Thursday
+    -F, --format=FORMAT  Use FORMAT as the datetime format       
+    -h, --help           This message'''
 
 import sys
 import os
 import json
+import getopt
+import shutil
+import tarfile
+import gzip
+
+from datetime import datetime, timedelta
 import urllib.request as libreq
 import feedparser
+
+PAPERS = 'papers.js'
+OLD_PAPERS_JS = 'old_papers.js'
+OLD_PAPERS_JSON = 'old_papers.json'
+
+def make_backup():
+
+    backup_name = 'papersbackup_{}.tar.gz'.format(datetime.today().isoformat())
+    with tarfile.open(backup_name, 'w') as compressed_backup:
+        for filename in (PAPERS, OLD_PAPERS_JS, OLD_PAPERS_JSON):
+            if os.path.isfile(filename):
+                compressed_backup.add(filename)
+    print('Created backup of current papers files in {}'.format(backup_name))
 
 def cleanhtml(raw_html):
 
@@ -60,14 +89,8 @@ def query(querytitle, share_date):
     return dictionary
 
 
+def main(titles, share_date):
 
-if __name__ == '__main__':
-
-    # The last arg is the date it'll be shared.
-    # Any format, just a string. "Tu Oct 12" etc is fine.
-    # We have to pass the last arg as the date though, or it'll mess up.
-    *titles, share_date = sys.argv[1:]
-    assert titles, "Provide 1 or more paper titles followed by a time string"
     new_papers = [query(title, share_date) for title in titles]
 
 
@@ -91,4 +114,48 @@ if __name__ == '__main__':
     with open('old_papers.json', 'w') as f_json, open('old_papers.js', 'w') as f_js:
         json.dump(all_papers, f_json)
         f_js.write(json.dumps(all_papers).join([r"data='", r"'"]))
+
+
+
+
+if __name__ == '__main__':
+
+    # The last arg is the date it'll be shared.
+    # Any format, just a string. "Tu Oct 12" etc is fine.
+    # We have to pass the last arg as the date though, or it'll mess up.
+    optlist, args = getopt.getopt(
+            sys.argv[1:], 
+            'bd:h0F:', 
+            ['backup', 'help', 'date=', 'format=']
+            )
+
+    share_date = None
+    format_string = '%a %b %d'
+    for opt, value in optlist:
+        if opt in ('-b', '--backup'):
+            make_backup()
+            if not args: exit(0)
+        elif opt in ('-d', '--date'):
+            share_date = value 
+        elif opt in ('-F', '--format'):
+            format_string = value
+        elif opt in ('-h', '--help'):
+            print(__doc__)
+            exit(0)
+    
+    if share_date is None:
+        today = datetime.today()
+        weekend = 7 - today.weekday()
+        next_coffee = min((weekend + 1) % 7, (weekend + 3) % 7)
+        share_date = (today.replace(
+            hour=10, 
+            minute=30, 
+            second=0,
+            microsecond=0
+            ) + timedelta(days=next_coffee)).strftime(format_string)
+
+
+    titles = args
+    assert titles, "Provide 1 or more paper titles"
+    main(titles, share_date)
 
