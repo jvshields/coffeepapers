@@ -1,26 +1,55 @@
 #!/usr/bin/env python
 # coding: utf-8
+'''Usage: ./query.py [OPTION]... TITLES
+Update website by querying ArXiV for papers with TITLES.
+Example: ./query.py -F '%Y-%m-%d' 'Delta Scuti Variables'
 
+Options:
+    -b, --backup         Create backup of current data files
+    -d, --date=DATE      Set the date as the string DATE
+                         default is next Tuesday or Thursday
+    -F, --format=FORMAT  Use FORMAT as the datetime format       
+    -h, --help           This message'''
 
+import sys
+import os
+import json
+import getopt
+import tarfile
+
+from datetime import datetime, timedelta
 import urllib.request as libreq
 import feedparser
-import sys
-import json
-import re
-from datetime import date
-import os
 
+PAPERS = 'papers.js'
+OLD_PAPERS_JS = 'old_papers.js'
+OLD_PAPERS_JSON = 'old_papers.json'
+
+def make_backup():
+
+    backup_name = 'papersbackup_{}.tar.gz'.format(datetime.today().isoformat())
+    with tarfile.open(backup_name, 'w') as compressed_backup:
+        for filename in (PAPERS, OLD_PAPERS_JS, OLD_PAPERS_JSON):
+            if os.path.isfile(filename):
+                compressed_backup.add(filename)
+    print('Created backup of current papers files in {}'.format(backup_name))
 
 def cleanhtml(raw_html):
-    cleantext = re.sub('\\n', '', raw_html)
-    cleaned = re.sub('\\t', ' ', cleantext)
-    cleanedmore = re.sub('\"', '“', cleaned)
-    cleanedmore = re.sub('\'', '’', cleanedmore)
-    return(cleanedmore)
+
+    cleaned_html = raw_html.translate(
+            raw_html.maketrans({
+                    '\n': None, 
+                    '\t': ' ', 
+                    '\'': '’',
+                    '\"': '“'
+                    })
+            )
+
+    return cleaned_html
 
 def query(querytitle, share_date):
-    queryfixed = querytitle.replace(' ', '+')
-    queryfixed = queryfixed.replace('_', '+AND+ti:')
+
+    queryfixed = querytitle.replace(' ', '+').replace('_', '+AND+ti:')
     
     base_url = 'http://export.arxiv.org/api/query?search_query=ti:'
     q = base_url + queryfixed + '&start=0&max_results=1'
@@ -34,8 +63,9 @@ def query(querytitle, share_date):
     uncleantitle = data.title
     title = cleanhtml(uncleantitle)
     
-    authorsunclean = (', '.join(author.name for author in data.authors))
-    authors = re.sub('\'', '’', authorsunclean)
+    authors = ', '.join(
+            author.name for author in data.authors
+            ).replace('\'', '’')
     
     link = data.link
  
@@ -54,58 +84,76 @@ def query(querytitle, share_date):
     }
     
     
-    return(dictionary)
+    return dictionary
 
 
+def main(titles, share_date):
+
+    new_papers = [query(title, share_date) for title in titles]
 
 
-full_list = []
-
-# The last arg is the date it'll be shared.
-# Any format, just a string. "Tu Oct 12" etc is fine.
-# We have to pass the last arg as the date though, or it'll mess up.
-share_date = sys.argv[-1]
-
-for arg in sys.argv[1:-1]:
-
-    title = arg
-    query_result = query(title, share_date)
-    full_list.append(query_result)
-
-with open('papers.js', 'w') as outfile:
-    outfile.write('data=\'')
-    json.dump(full_list, outfile)
-    outfile.write('\'')
-    
-# The following loads and updates the archive json file
-# It's annoying and messy tbh. Python's JSON reader and the html one
-# are using different formats. I keep a file "old_papers.json" that is a 
-# cumulative list of all past and current papers. We load and dump to that, 
-# then use the updated data to prep "old_papers.js" for the html script. 
-# It works but isn't very clean.
-
-# Make sure to check "old_papers.json" exists. 
-# If not, dump full_list to it and move on
-if not os.path.isfile("old_papers.json"):
-    
-    data = full_list
-    with open('old_papers.json', 'w') as f:
-        json.dump(full_list, f)
-
-# If "old_papers.json" exists, load it, update its data will full_list
-# and dump.
-else:
-    with open('old_papers.json') as f:
-        data = json.load(f)
-
-        for i in range(len(full_list)):
-            data.insert(0, full_list[i])
+    with open('papers.js', 'w') as outfile:
+        outfile.write(json.dumps(new_papers).join([r"data='", r"'"]))
         
-    with open('old_papers.json', 'w') as f:
-        json.dump(data, f)
+    # The following loads and updates the archive json file
+    # It's annoying and messy tbh. Python's JSON reader and the html one
+    # are using different formats. I keep a file "old_papers.json" that is a 
+    # cumulative list of all past and current papers. We load and dump to that, 
+    # then use the updated data to prep "old_papers.js" for the html script. 
+    # It works but isn't very clean.
 
-# Finally, use "data" to create the ".js" file for the html script.
-with open('old_papers.js', 'w') as outfile:
-    outfile.write('data=\'')
-    json.dump(data, outfile)
-    outfile.write('\'')
+    # Make sure to check "old_papers.json" exists. 
+    all_papers = new_papers # Build the list of all previous and current papers
+    if os.path.isfile("old_papers.json"): # if old_papers.json exists, append 
+         with open('old_papers.json', 'r') as f:
+            all_papers += json.load(f)
+        
+    # write out our new database of old papers
+    with open('old_papers.json', 'w') as f_json, open('old_papers.js', 'w') as f_js:
+        json.dump(all_papers, f_json)
+        f_js.write(json.dumps(all_papers).join([r"data='", r"'"]))
+
+
+
+
+if __name__ == '__main__':
+
+    # The last arg is the date it'll be shared.
+    # Any format, just a string. "Tu Oct 12" etc is fine.
+    # We have to pass the last arg as the date though, or it'll mess up.
+    optlist, args = getopt.getopt(
+            sys.argv[1:], 
+            'bd:hF:', 
+            ['backup', 'help', 'date=', 'format=']
+            )
+
+    share_date = None
+    format_string = '%a %b %d'
+    for opt, value in optlist:
+        if opt in ('-b', '--backup'):
+            make_backup()
+            if not args: exit(0)
+        elif opt in ('-d', '--date'):
+            share_date = value 
+        elif opt in ('-F', '--format'):
+            format_string = value
+        elif opt in ('-h', '--help'):
+            print(__doc__)
+            exit(0)
+    
+    if share_date is None:
+        today = datetime.today() + timedelta(hours=13, minutes=30)
+        weekend = 7 - today.weekday()
+        next_coffee = min((weekend + 1) % 7, (weekend + 3) % 7)
+        share_date = (today.replace(
+            hour=10, 
+            minute=30, 
+            second=0,
+            microsecond=0
+            ) + timedelta(days=next_coffee)).strftime(format_string)
+
+
+    titles = args
+    assert titles, "Provide 1 or more paper titles"
+    main(titles, share_date)
+
