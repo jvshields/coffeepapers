@@ -38,6 +38,7 @@ def cleanhtml(raw_html):
 
     cleaned_html = raw_html.translate(
             raw_html.maketrans({
+                    '\\': None,
                     '\n': None, 
                     '\t': ' ', 
                     '\'': '’',
