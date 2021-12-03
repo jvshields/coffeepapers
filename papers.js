@@ -1,1 +1,1 @@
-data='[{"title": "Modeling the galaxy-halo connection with machine learning", "authors": "Ana Maria Delgado, Digvijay Wadekar, Boryana Hadzhiyska, Sownak Bose, Lars Hernquist, Shirley Ho", "url": "http://arxiv.org/abs/2111.02422v1", "pdf": "http://arxiv.org/pdf/2111.02422v1", "date": "Tue Nov 30"}]'
+data='[{"title": "Holes in Bayesian Statistics", "authors": "Andrew Gelman, Yuling Yao", "url": "http://arxiv.org/abs/2002.06467v2", "pdf": "http://arxiv.org/pdf/2002.06467v2", "date": "Thu Dec 02"}]'
