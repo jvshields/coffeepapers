@@ -9,6 +9,17 @@ Options:
     -d, --date=DATE      Set the date as the string DATE
                          default is next Tuesday or Thursday
     -F, --format=FORMAT  Use FORMAT as the datetime format       
+    -m, --method=METHOD  Search ArXiV by METHOD
+                         Options include the following:
+                           ti: Title (default)
+                           au: Author
+                           abs: Abstract
+                           co: Comment
+                           jr: Journal Reference
+                           cat: Subject Category
+                           rn: Report Number
+                           id: Id
+                           all: All of the above
     -h, --help           This message'''
 
 import sys
@@ -48,11 +59,15 @@ def cleanhtml(raw_html):
 
     return cleaned_html
 
-def query(querytitle, share_date):
+def query(querytitle, share_date, method='ti'):
+    '''
+        method: Search method, see https://arxiv.org/help/api/basics
+            default is title
+    '''
 
     queryfixed = querytitle.replace(' ', '+').replace('_', '+AND+ti:')
-    
-    base_url = 'http://export.arxiv.org/api/query?search_query=ti:'
+    base_url = 'http://export.arxiv.org/api/query?search_query={}:'.format(
+            method)
     q = base_url + queryfixed + '&start=0&max_results=1'
     with libreq.urlopen(q) as url:
       r = url.read()
@@ -88,9 +103,9 @@ def query(querytitle, share_date):
     return dictionary
 
 
-def main(titles, share_date):
+def main(titles, share_date, method='ti'):
 
-    new_papers = [query(title, share_date) for title in titles]
+    new_papers = [query(title, share_date, method) for title in titles]
 
 
     with open('papers.js', 'w') as outfile:
@@ -124,10 +139,11 @@ if __name__ == '__main__':
     # We have to pass the last arg as the date though, or it'll mess up.
     optlist, args = getopt.getopt(
             sys.argv[1:], 
-            'bd:hF:', 
-            ['backup', 'help', 'date=', 'format=']
+            'bdm:hF:', 
+            ['backup', 'help', 'date=', 'format=', 'method=']
             )
 
+    method = 'ti'
     share_date = None
     format_string = '%a %b %d'
     for opt, value in optlist:
@@ -138,6 +154,8 @@ if __name__ == '__main__':
             share_date = value 
         elif opt in ('-F', '--format'):
             format_string = value
+        elif opt in ('-m', '--method'):
+            method = value
         elif opt in ('-h', '--help'):
             print(__doc__)
             exit(0)
@@ -156,5 +174,5 @@ if __name__ == '__main__':
 
     titles = args
     assert titles, "Provide 1 or more paper titles"
-    main(titles, share_date)
+    main(titles, share_date, method)
 
