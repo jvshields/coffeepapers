@@ -1,1 +1,1 @@
-data='[{"title": "Hydrodynamical simulations for the common-envelope wind model for Type  Ia supernovae", "authors": "Yingzhen Cui, Xiangcun Meng, Philipp Podsiadlowski, Ren Song", "url": "http://arxiv.org/abs/2210.07607v1", "pdf": "http://arxiv.org/pdf/2210.07607v1", "date": "Tue Oct 18"}]'
+data='[{"title": "Beating stellar systematic error floors using transit-based densities", "authors": "Jason D. Eastman, Hannah Diamond-Lowe, Jamie Tayar", "url": "http://arxiv.org/abs/2209.14301v1", "pdf": "http://arxiv.org/pdf/2209.14301v1", "date": "Thu Nov 03"}]'
