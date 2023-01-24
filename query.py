@@ -155,7 +155,7 @@ if __name__ == "__main__":
     method = "ti"
     share_date = None
     test_mode = False
-    format_string = "%a %b %d"
+    format_string = "%a %b %d, %Y"
     for opt, value in optlist:
         if opt in ("-b", "--backup"):
             make_backup()
