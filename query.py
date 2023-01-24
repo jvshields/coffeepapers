@@ -161,12 +161,12 @@ if __name__ == '__main__':
             exit(0)
     
     if share_date is None:
-        today = datetime.today() + timedelta(hours=13, minutes=30)
+        today = datetime.today() + timedelta(hours=13, minutes=0)
         weekend = 7 - today.weekday()
-        next_coffee = min((weekend + 1) % 7, (weekend + 3) % 7)
+        next_coffee = min((weekend + 2) % 7, (weekend + 4) % 7)
         share_date = (today.replace(
-            hour=10, 
-            minute=30, 
+            hour=11, 
+            minute=0, 
             second=0,
             microsecond=0
             ) + timedelta(days=next_coffee)).strftime(format_string)
