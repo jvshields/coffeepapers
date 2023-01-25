@@ -37,6 +37,7 @@ PAPERS = "papers.js"
 OLD_PAPERS_JS = "old_papers.js"
 OLD_PAPERS_JSON = "old_papers.json"
 
+SCHEDULE = [2, 4] # Wednesday and Thursday ISO time
 
 def make_backup():
 
@@ -109,13 +110,13 @@ def main(titles, share_date, method="ti", test_mode=False):
 
     if test_mode:
         print("Running in Test Mode: No Files will be written")
-        print("papers.js")
+        print(PAPERS)
         print("---------")
         print(json.dumps(new_papers).join([r"data='", r"'"]))
         print("---------")
         return 0
 
-    with open("papers.js", "w") as outfile:
+    with open(PAPERS, "w") as outfile:
         outfile.write(json.dumps(new_papers).join([r"data='", r"'"]))
 
     # The following loads and updates the archive json file
@@ -129,13 +130,13 @@ def main(titles, share_date, method="ti", test_mode=False):
     all_papers = (
         new_papers  # Build the list of all previous and current papers
     )
-    if os.path.isfile("old_papers.json"):  # if old_papers.json exists, append
-        with open("old_papers.json", "r") as f:
+    if os.path.isfile(OLD_PAPERS_JSON):  # if old_papers.json exists, append
+        with open(OLD_PAPERS_JSON, "r") as f:
             all_papers += json.load(f)
 
     # write out our new database of old papers
-    with open("old_papers.json", "w") as f_json, open(
-        "old_papers.js", "w"
+    with open(OLD_PAPERS_JSON, "w") as f_json, open(
+        OLD_PAPERS_JS, "w"
     ) as f_js:
         json.dump(all_papers, f_json)
         f_js.write(json.dumps(all_papers).join([r"data='", r"'"]))
@@ -176,7 +177,7 @@ if __name__ == "__main__":
     if share_date is None:
         today = datetime.today() + timedelta(hours=13, minutes=30)
         weekend = 7 - today.weekday()
-        next_coffee = min((weekend + 2) % 7, (weekend + 4) % 7)
+        next_coffee = min((weekend + SCHEDULE[0]) % 7, (weekend + SCHEDULE[1]) % 7)
         share_date = (
             today.replace(hour=10, minute=30, second=0, microsecond=0)
             + timedelta(days=next_coffee)
