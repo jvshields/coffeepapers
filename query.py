@@ -37,7 +37,8 @@ PAPERS = "papers.js"
 OLD_PAPERS_JS = "old_papers.js"
 OLD_PAPERS_JSON = "old_papers.json"
 
-SCHEDULE = [2, 4] # Wednesday and Thursday ISO time
+SCHEDULE = [2, 4]  # Wednesday and Thursday ISO time
+
 
 def make_backup():
 
@@ -60,6 +61,29 @@ def cleanhtml(raw_html):
     return cleaned_html
 
 
+def determine_similarity(string1, string2):
+    """determine the cosine similarity between strings"""
+
+    char_dicts = ({}, {})
+    strings = (string1.upper().split(), string2.upper().split())
+    for char_dict, string in zip(char_dicts, strings):
+        for word in string:
+            if word not in char_dict:
+                char_dict[word] = 0
+            char_dict[word] += 1
+
+    all_words = sorted(
+        list(set(list(char_dicts[0].keys()) + list(char_dicts[1].keys())))
+    )
+    vectors = [
+        [char_dict[word] if word in char_dict else 0 for word in all_words]
+        for char_dict in (char_dicts)
+    ]
+    mags = [sum(v**2 for v in vector) ** 0.5 for vector in vectors]
+    similarity = sum(v1 * v2 / (mags[0] * mags[1]) for v1, v2 in zip(*vectors))
+    return similarity
+
+
 def query(querytitle, share_date, method="ti"):
     """
     method: Search method, see https://arxiv.org/help/api/basics
@@ -75,11 +99,33 @@ def query(querytitle, share_date, method="ti"):
         r = url.read()
 
     feed = feedparser.parse(r)
-
+    assert (
+        feed.entries
+    ), f"Query failed to find '{querytitle}' using search method '{method}'"
     data = feed.entries[0]
 
     uncleantitle = data.title
     title = cleanhtml(uncleantitle)
+
+    if method == "ti":  # Verify the title is what was requested
+        similarity = determine_similarity(cleanhtml(querytitle), title)
+        if similarity < 0.9:
+            print(
+                "The title returned by the query seems to differ from the title requested"
+            )
+            print(f" Requested Title: '{cleanhtml(querytitle)}'")
+            print(f" Found Title:     '{title}'")
+            print(f"Cosine similarity: {similarity:.3f}")
+            print("------------------------------------")
+            while True:
+                response = input(
+                    "Would you like to select this article? [Y/n]:"
+                )
+                if response.upper() == "Y":
+                    break
+                elif response.upper() == "N":
+                    print("No changes were applied... Exiting")
+                    exit(1)
 
     authors = ", ".join(author.name for author in data.authors).replace(
         "'", "’"
@@ -106,10 +152,13 @@ def query(querytitle, share_date, method="ti"):
 
 def main(titles, share_date, method="ti", test_mode=False):
 
+    if test_mode:
+        print("Running in Test Mode: No Files will be written")
+
     new_papers = [query(title, share_date, method) for title in titles]
 
     if test_mode:
-        print("Running in Test Mode: No Files will be written")
+        print("Sample Output:")
         print(PAPERS)
         print("---------")
         print(json.dumps(new_papers).join([r"data='", r"'"]))
@@ -177,7 +226,9 @@ if __name__ == "__main__":
     if share_date is None:
         today = datetime.today() + timedelta(hours=13, minutes=30)
         weekend = 7 - today.weekday()
-        next_coffee = min((weekend + SCHEDULE[0]) % 7, (weekend + SCHEDULE[1]) % 7)
+        next_coffee = min(
+            (weekend + SCHEDULE[0]) % 7, (weekend + SCHEDULE[1]) % 7
+        )
         share_date = (
             today.replace(hour=10, minute=30, second=0, microsecond=0)
             + timedelta(days=next_coffee)
