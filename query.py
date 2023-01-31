@@ -5,6 +5,7 @@ Update website by querying ArXiV for papers with TITLES.
 Example: ./query.py -F '%Y-%m-%d' 'Delta Scuti Variables'
 
 Options:
+    -a, --append         Add another paper to the home page
     -t, --test           Test run, no file changes are made
     -b, --backup         Create backup of current data files
     -d, --date=DATE      Set the date as the string DATE
@@ -150,23 +151,32 @@ def query(querytitle, share_date, method="ti"):
     return dictionary
 
 
-def main(titles, share_date, method="ti", test_mode=False):
+def main(titles, share_date, method="ti", test_mode=False, append=False):
 
     if test_mode:
         print("Running in Test Mode: No Files will be written")
 
     new_papers = [query(title, share_date, method) for title in titles]
 
+    current_papers = []
+    if append:
+        with open(PAPERS, "r") as f:
+            current_papers = json.loads(
+                f.read().strip().lstrip(r"data='").strip(r"'")
+            )
+
     if test_mode:
         print("Sample Output:")
         print(PAPERS)
         print("---------")
-        print(json.dumps(new_papers).join([r"data='", r"'"]))
+        print(json.dumps(new_papers + current_papers).join([r"data='", r"'"]))
         print("---------")
         return 0
 
     with open(PAPERS, "w") as outfile:
-        outfile.write(json.dumps(new_papers).join([r"data='", r"'"]))
+        outfile.write(
+            json.dumps(new_papers + current_papers).join([r"data='", r"'"])
+        )
 
     # The following loads and updates the archive json file
     # It's annoying and messy tbh. Python's JSON reader and the html one
@@ -198,13 +208,14 @@ if __name__ == "__main__":
     # We have to pass the last arg as the date though, or it'll mess up.
     optlist, args = getopt.getopt(
         sys.argv[1:],
-        "tbd:m:hF:",
-        ["test", "backup", "help", "date=", "format=", "method="],
+        "atbd:m:hF:",
+        ["append", "test", "backup", "help", "date=", "format=", "method="],
     )
 
     method = "ti"
     share_date = None
     test_mode = False
+    append = False
     format_string = "%a %b %d, %Y"
     for opt, value in optlist:
         if opt in ("-b", "--backup"):
@@ -222,6 +233,8 @@ if __name__ == "__main__":
             exit(0)
         elif opt in ("-t", "--test"):
             test_mode = True
+        elif opt in ("-a", "--append"):
+            append = True
 
     if share_date is None:
         today = datetime.today() + timedelta(hours=13, minutes=30)
@@ -236,4 +249,4 @@ if __name__ == "__main__":
 
     titles = args
     assert titles, "Provide 1 or more paper titles"
-    main(titles, share_date, method, test_mode)
+    main(titles, share_date, method, test_mode, append)
