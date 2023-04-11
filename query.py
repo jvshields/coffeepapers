@@ -84,18 +84,40 @@ def determine_similarity(string1, string2):
     similarity = sum(v1 * v2 / (mags[0] * mags[1]) for v1, v2 in zip(*vectors))
     return similarity
 
+def user_select_alternatives(querytitle, feed):
+
+    titles = [cleanhtml(data.title) for data in feed]
+    similarities = [determine_similarity(cleanhtml(querytitle), title) for title in titles]
+    options = zip(titles, similarities)
+    order = sorted(range(len(feed)), key=lambda i: similarities[i])[::-1]
+    print(f'Found {len(feed)} Similar Articles:')
+    print('{:<6s} | {:<5s} | {:<6s}'.format('Index', 'Score','Title'))
+    for j, i in enumerate(order):
+        print(f'{j:<6d} | {similarities[i]:<1.3f} | {titles[i]:<6s}')
+    answer = '.'
+    while answer.upper() != 'Q':
+        answer = input('Please select an article index to you instead [0-9/q(uit)]:')
+        if answer in map(str, range(10)):
+            print(f"You've selected: {titles[order[int(answer)]]}")
+            return feed[order[int(answer)]]
+    return None
+
 
 def query(querytitle, share_date, method="ti"):
     """
     method: Search method, see https://arxiv.org/help/api/basics
         default is title
     """
+    if method == "ti":
+        num_entries = 10
+    else:
+        num_entries = 0
 
     queryfixed = querytitle.replace(" ", "+").replace("_", "+AND+ti:")
     base_url = "http://export.arxiv.org/api/query?search_query={}:".format(
         method
     )
-    q = base_url + queryfixed + "&start=0&max_results=1"
+    q = base_url + queryfixed + f"&start=0&max_results={num_entries}"
     with libreq.urlopen(q) as url:
         r = url.read()
 
@@ -103,6 +125,7 @@ def query(querytitle, share_date, method="ti"):
     assert (
         feed.entries
     ), f"Query failed to find '{querytitle}' using search method '{method}'"
+    print([cleanhtml(data.title) for data in feed.entries])
     data = feed.entries[0]
 
     uncleantitle = data.title
@@ -125,8 +148,14 @@ def query(querytitle, share_date, method="ti"):
                 if response.upper() == "Y":
                     break
                 elif response.upper() == "N":
-                    print("No changes were applied... Exiting")
-                    exit(1)
+                    data = user_select_alternatives(querytitle, feed.entries)
+                    if data is None:
+                        print("No changes were applied... Exiting")
+                        exit(1)
+                    else:
+                        uncleantitle = data.title
+                        title = cleanhtml(uncleantitle)
+                        break
 
     authors = ", ".join(author.name for author in data.authors).replace(
         "'", "’"
