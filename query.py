@@ -84,19 +84,26 @@ def determine_similarity(string1, string2):
     similarity = sum(v1 * v2 / (mags[0] * mags[1]) for v1, v2 in zip(*vectors))
     return similarity
 
+
 def user_select_alternatives(querytitle, feed):
 
+    if len(feed) == 0:
+        return None
     titles = [cleanhtml(data.title) for data in feed]
-    similarities = [determine_similarity(cleanhtml(querytitle), title) for title in titles]
+    similarities = [
+        determine_similarity(cleanhtml(querytitle), title) for title in titles
+    ]
     options = zip(titles, similarities)
     order = sorted(range(len(feed)), key=lambda i: similarities[i])[::-1]
-    print(f'Found {len(feed)} Similar Articles:')
-    print('{:<6s} | {:<5s} | {:<6s}'.format('Index', 'Score','Title'))
+    print(f"Found {len(feed)} Similar Articles:")
+    print("{:<6s} | {:<5s} | {:<6s}".format("Index", "Score", "Title"))
     for j, i in enumerate(order):
-        print(f'{j:<6d} | {similarities[i]:<1.3f} | {titles[i]:<6s}')
-    answer = '.'
-    while answer.upper() != 'Q':
-        answer = input('Please select an article index to you instead [0-9/q(uit)]:')
+        print(f"{j:<6d} | {similarities[i]:<1.3f} | {titles[i]:<6s}")
+    answer = "."
+    while answer.upper() != "Q":
+        answer = input(
+            "Please select an article index to you instead [0-9/q(uit)]:"
+        )
         if answer in map(str, range(10)):
             print(f"You've selected: {titles[order[int(answer)]]}")
             return feed[order[int(answer)]]
@@ -148,7 +155,9 @@ def query(querytitle, share_date, method="ti"):
                 if response.upper() == "Y":
                     break
                 elif response.upper() == "N":
-                    data = user_select_alternatives(querytitle, feed.entries)
+                    data = user_select_alternatives(
+                        querytitle, feed.entries[1:]
+                    )
                     if data is None:
                         print("No changes were applied... Exiting")
                         exit(1)
