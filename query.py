@@ -132,7 +132,6 @@ def query(querytitle, share_date, method="ti"):
     assert (
         feed.entries
     ), f"Query failed to find '{querytitle}' using search method '{method}'"
-    print([cleanhtml(data.title) for data in feed.entries])
     data = feed.entries[0]
 
     uncleantitle = data.title
