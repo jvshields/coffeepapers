@@ -1,1 +1,1 @@
-data='[{"title": "Exoplanet Nodal Precession Induced by Rapidly Rotating Stars: Impacts on  Transit Probabilities and Biases", "authors": "Alexander P. Stephan, B. Scott Gaudi", "url": "http://arxiv.org/abs/2304.09890v1", "pdf": "http://arxiv.org/pdf/2304.09890v1", "date": "Fri Apr 28, 2023"}]'
+data='[{"title": "Early multiwavelength analysis of the recurrent nova V745 Sco", "authors": "Laura Delgado, Margarita Hernanz", "url": "http://arxiv.org/abs/1910.08940v1", "pdf": "http://arxiv.org/pdf/1910.08940v1", "date": "Fri May 19, 2023"}]'
