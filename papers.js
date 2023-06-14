@@ -1,1 +1,1 @@
-data='[{"title": "Statistical Properties of Brown Dwarf Companions: Implications for  Different Formation Mechanisms", "authors": "Bo Ma, Jian Ge", "url": "http://arxiv.org/abs/1303.6442v1", "pdf": "http://arxiv.org/pdf/1303.6442v1", "date": "Wed Jun 14, 2023"}]'
+data='[{"title": "Thermonuclear X-ray bursts", "authors": "Duncan K. Galloway, Laurens Keek", "url": "http://arxiv.org/abs/1712.06227v1", "pdf": "http://arxiv.org/pdf/1712.06227v1", "date": "Fri Jun 16, 2023"}]'
