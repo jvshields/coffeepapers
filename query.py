@@ -38,7 +38,7 @@ PAPERS = "papers.js"
 OLD_PAPERS_JS = "old_papers.js"
 OLD_PAPERS_JSON = "old_papers.json"
 
-SCHEDULE = [2, 4]  # Wednesday and Thursday ISO time
+SCHEDULE = [1, 3]  # Tuesday and Thursday iso time - see https://www.educative.io/answers/what-is-the-datetime-dateweekday-function-in-python
 
 
 def make_backup():
