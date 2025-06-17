@@ -1,1 +1,1 @@
-data='[{"title": "Modeling the Light Curve and Spectra of SN 2023aew", "authors": "Rachid Ouyed", "url": "http://arxiv.org/abs/2505.08737v1", "pdf": "http://arxiv.org/pdf/2505.08737v1", "date": "Thu Jun 12, 2025"}]'
+data='[{"title": "A map of the outer gas disk of the Galaxy with direct distances from  young stars", "authors": "Peter Craig, Sukanya Chakrabarti, Alexander R. Pettitt, Robyn Sanderson, Erik Rosolowsky", "url": "http://arxiv.org/abs/2506.05575v1", "pdf": "http://arxiv.org/pdf/2506.05575v1", "date": "Tue Jun 17, 2025"}]'
