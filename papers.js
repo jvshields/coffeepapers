@@ -1,1 +1,1 @@
-data='[{"title": "Why do we do astrophysics?", "authors": "David W. Hogg", "url": "https://arxiv.org/abs/2602.10181v1", "pdf": "https://arxiv.org/pdf/2602.10181v1", "date": "Thu Feb 19, 2026"}]'
+data='[{"title": "General Relativity Can Prevent a Runaway Greenhouse on Potentially Habitable Planets Orbiting White Dwarfs", "authors": "Eva Stafne, Juliette Becker", "url": "https://arxiv.org/abs/2509.26421v1", "pdf": "https://arxiv.org/pdf/2509.26421v1", "date": "Thu Feb 26, 2026"}]'
