@@ -13,3 +13,5 @@ There are several methods of running the query script, specifying arxiv ID or ot
 
 
 For more info run `$ ./query.py --help`
+
+Also, thank you to arXiv for use of its open access interoperability. This wouldn't be possible without its open API. 
