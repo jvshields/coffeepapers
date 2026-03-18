@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 """Usage: ./query.py [OPTION]... TITLES
-Update website by querying ArXiV for papers with TITLES.
+Update website by querying ArXiV for papers.
+If querying by title, return 10 options. If other method, only 1.
 Example: ./query.py -F '%Y-%m-%d' 'Delta Scuti Variables'
 
 Options:
@@ -91,7 +92,6 @@ def user_select_alternatives(querytitle, feed):
     similarities = [
         determine_similarity(cleanhtml(querytitle), title) for title in titles
     ]
-    options = zip(titles, similarities)
     order = sorted(range(len(feed)), key=lambda i: similarities[i])[::-1]
     print(f"Found {len(feed)} Similar Articles:")
     print("{:<6s} | {:<5s} | {:<6s}".format("Index", "Score", "Title"))
