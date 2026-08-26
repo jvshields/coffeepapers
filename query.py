@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# coding: utf-8
 """Usage: ./query.py [OPTION]... TITLES
 Update website by querying ArXiV for papers.
 If querying by title, return 10 options. If other method, only 1.
@@ -25,14 +24,14 @@ Options:
                            all: All of the above
     -h, --help           This message"""
 
-import sys
-import os
-import json
 import getopt
+import json
+import os
+import sys
 import tarfile
-
-from datetime import datetime, timedelta
 import urllib.request as libreq
+from datetime import datetime, timedelta
+
 import feedparser
 
 PAPERS = "papers.js"
